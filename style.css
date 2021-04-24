@@ -1,0 +1,23 @@
+.board {
+	width: 70vh;
+	margin: auto;
+}
+
+.info {
+	width: 400px;
+	margin: auto;
+}
+
+.movesHistory {
+	max-height: 100px;
+	overflow-y: scroll;
+}
+/* 
+.hoverClass {
+	background: rgb(255, 232, 104);
+	margin: auto auto;
+
+	height: 30%;
+	width: 30%;
+	border-radius: 60%;
+} */
