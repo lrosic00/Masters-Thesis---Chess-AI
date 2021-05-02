@@ -12,6 +12,10 @@
 	max-height: 100px;
 	overflow-y: scroll;
 }
+.blackp .blackCaptures {
+}
+.whiteCaptures {
+}
 /* 
 .hoverClass {
 	background: rgb(255, 232, 104);

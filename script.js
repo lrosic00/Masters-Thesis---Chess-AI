@@ -1,25 +1,54 @@
 var board,
 	game = new Chess();
 
-var calculateBestMove = function (game) {
+var minmaxTree = function (depth, game, isMaximisingPlayer) {
 	var possibleMoves = game.ugly_moves();
-	var bestMove = null;
-	var bestValue = -1000;
+	var bestMove = -1000;
+	var bestMoveFound;
 
 	for (var i = 0; i < possibleMoves.length; i++) {
 		var possibleMove = possibleMoves[i];
-
 		game.ugly_move(possibleMove);
-
-		var boardValue = -getBoardValue(game.board());
+		var value = minimax(depth - 1, game, !isMaximisingPlayer);
 		game.undo();
-		if (boardValue > bestValue) {
-			bestValue = boardValue;
-			bestMove = possibleMove;
+		if (value >= bestMove) {
+			bestMove = value;
+			bestMoveFound = possibleMove;
 		}
 	}
+	return bestMoveFound;
+};
 
-	return bestMove;
+var minimax = function (depth, game, isMaximisingPlayer) {
+	if (depth === 0) {
+		return -getBoardValue(game.board());
+	}
+
+	var possibleMoves = game.ugly_moves();
+
+	if (isMaximisingPlayer) {
+		var bestMove = -1000;
+		for (var i = 0; i < possibleMoves.length; i++) {
+			game.ugly_move(possibleMoves[i]);
+			bestMove = Math.max(
+				bestMove,
+				minimax(depth - 1, game, !isMaximisingPlayer)
+			);
+			game.undo();
+		}
+		return bestMove;
+	} else {
+		var bestMove = 9999;
+		for (var i = 0; i < possibleMoves.length; i++) {
+			game.ugly_move(possibleMoves[i]);
+			bestMove = Math.min(
+				bestMove,
+				minimax(depth - 1, game, !isMaximisingPlayer)
+			);
+			game.undo();
+		}
+		return bestMove;
+	}
 };
 
 var getBoardValue = function (board) {
@@ -58,6 +87,10 @@ var getPieceValue = function (piece) {
 var makeBestMove = function () {
 	var bestMove = getBestMove(game);
 	game.ugly_move(bestMove);
+	// console.log(bestMove.captured);
+	if (bestMove.captured !== undefined) {
+		getCapturedPiece(bestMove.captured, "w");
+	}
 	board.position(game.fen());
 	showPlayedMovesHistory(game.history());
 	if (game.game_over()) {
@@ -69,7 +102,9 @@ var getBestMove = function (game) {
 	if (game.game_over()) {
 		alert("Game over");
 	}
-	var bestMove = calculateBestMove(game);
+	depth = 3; //make it so user inputs depth
+
+	var bestMove = minmaxTree(depth, game, true);
 	return bestMove;
 };
 
@@ -87,6 +122,77 @@ var showPlayedMovesHistory = function (moves) {
 	}
 	historyEl.scrollTop(historyEl[0].scrollHeight);
 };
+whitePieceCounter = {
+	p: 0,
+	n: 0,
+	b: 0,
+	r: 0,
+	q: 0,
+};
+blackPieceCounter = {
+	p: 0,
+	n: 0,
+	b: 0,
+	r: 0,
+	q: 0,
+};
+var incrementCaptureCounter = function (capturedPiece, color) {
+	if (color === "w") {
+		if (capturedPiece === "p") {
+			whitePieceCounter.p++;
+		} else if (capturedPiece === "n") {
+			whitePieceCounter.n++;
+		} else if (capturedPiece === "b") {
+			whitePieceCounter.b++;
+		} else if (capturedPiece === "r") {
+			whitePieceCounter.r++;
+		} else if (capturedPiece === "q") {
+			whitePieceCounter.q++;
+		}
+	} else if (color === "b") {
+		if (capturedPiece === "p") {
+			blackPieceCounter.p++;
+		} else if (capturedPiece === "n") {
+			blackPieceCounter.n++;
+		} else if (capturedPiece === "b") {
+			blackPieceCounter.b++;
+		} else if (capturedPiece === "r") {
+			blackPieceCounter.r++;
+		} else if (capturedPiece === "q") {
+			blackPieceCounter.q++;
+		}
+	}
+};
+var getImageName = function (capturedPiece, color) {
+	if (color === "w") return whitePieceCounter[capturedPiece];
+	return blackPieceCounter[capturedPiece];
+};
+var DeleteCapturedPieceImg = function (capturedPiece, color) {
+	color = color === "w" ? "black" : "white";
+	$("." + color + capturedPiece + " ." + color + "Captures").remove();
+};
+var getCapturedPiece = function (capturedPiece, color) {
+	var colorClass = null;
+	if (color === "w") {
+		colorClass = "black";
+	} else if (color === "b") {
+		colorClass = "white";
+	}
+	incrementCaptureCounter(capturedPiece, color);
+	DeleteCapturedPieceImg(capturedPiece, color);
+	var capturedPieceEl = $("." + colorClass + capturedPiece);
+	capturedPieceEl.append(
+		"<img class=" +
+			colorClass +
+			"Captures" +
+			' src="./captures/' +
+			color +
+			capturedPiece +
+			"x" +
+			getImageName(capturedPiece, color) +
+			'.png" />'
+	);
+};
 
 // ### CONFIG FUNCTIONS ###
 
@@ -94,8 +200,8 @@ var showPlayedMovesHistory = function (moves) {
 var onDragStart = function (source, piece, position, orientation) {
 	if (
 		game.in_checkmate() === true ||
-		game.in_draw() === true
-		// || piece.search(/^b/) !== -1
+		game.in_draw() === true ||
+		piece.search(/^b/) !== -1
 	) {
 		return false;
 	}
@@ -113,7 +219,9 @@ var onDrop = function (source, target) {
 	if (move === null) {
 		return "snapback";
 	}
-
+	if (move.captured !== undefined) {
+		getCapturedPiece(move.captured, "b");
+	}
 	showPlayedMovesHistory(game.history());
 	window.setTimeout(makeBestMove, 300);
 };

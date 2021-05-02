@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html> -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,12 +6,32 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="container">
+    
 <div id="board" class="board"></div>
 <div id="info" class="info" >
     <br>
     <br>
     <div id="movesHistory" class="movesHistory">
     </div>
+    <br>
+    <div id="capturedPieces" class="capturedPieces">
+        <div class="blackPieces">Black captured: 
+            <div class="blackp"></div>
+            <div class="blackn"></div>
+            <div class="blackb"></div>
+            <div class="blackr"></div>
+            <div class="blackq"></div>
+        </div>
+        <div class="whitepieces">White captured:
+            <div class="whitep"></div>
+            <div class="whiten"></div>
+            <div class="whiteb"></div>
+            <div class="whiter"></div>
+            <div class="whiteq"></div>
+             </div>
+    </div>
+</div>
 </div>
 <script src="lib/jquery/jquery-3.2.1.min.js"></script>
 <script src="lib/chessboardjs/js/chess.js"></script>
