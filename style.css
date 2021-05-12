@@ -1,20 +1,40 @@
 .board {
 	width: 70vh;
-	margin: auto;
+	margin: 1%;
 }
 
 .info {
 	width: 400px;
-	margin: auto;
+	margin: 1%;
 }
 
 .movesHistory {
-	max-height: 100px;
+	max-height: 100%;
 	overflow-y: scroll;
 }
-.blackp .blackCaptures {
+.movesHistory {
 }
+.container {
+	display: flex;
+	justify-content: center;
+	margin: auto;
+}
+.capturedPieces {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.blackPieces {
+	display: flex;
+}
+.whitePieces {
+	display: flex;
+}
+
+.blackCaptures,
 .whiteCaptures {
+	height: 3rem;
 }
 /* 
 .hoverClass {
