@@ -1,6 +1,21 @@
 var board,
 	game = new Chess();
 
+function undo() {
+	game.undo();
+	board.position(game.fen());
+}
+$("#undoButton").on("click", function () {
+	if (game.history().length >= 2) {
+		undo();
+		window.setTimeout(function () {
+			undo();
+		}, 250);
+	} else {
+		alert("Nothing to undo");
+	}
+});
+
 var minmaxTree = function (depth, game, isMaximisingPlayer) {
 	var possibleMoves = game.ugly_moves();
 	var bestMove = -1000;
@@ -63,34 +78,103 @@ var getBoardValue = function (board) {
 	var boardValue = 0;
 	for (var i = 0; i < 8; i++) {
 		for (var j = 0; j < 8; j++) {
-			boardValue = boardValue + getPieceValue(board[i][j]);
+			boardValue = boardValue + getPieceValue(board[i][j], i, j);
 		}
 	}
 	return boardValue;
 };
-var calculatePieceValue = function (piece) {
+var calculatePieceValue = function (piece, color, x, y) {
 	if (piece.type === "p") {
-		return 10;
+		return 10 + (color === "w" ? whitePawn[x][y] : blackPawn[x][y]);
 	} else if (piece.type === "n") {
-		return 30;
+		return 30 + (color === "w" ? whiteKnight[x][y] : blackKnight[x][y]);
 	} else if (piece.type === "b") {
-		return 30;
+		return 30 + (color === "w" ? whiteBishop[x][y] : blackBishop[x][y]);
 	} else if (piece.type === "r") {
-		return 50;
+		return 50 + (color === "w" ? whiteRook[x][y] : blackRook[x][y]);
 	} else if (piece.type === "q") {
-		return 90;
+		return 90 + (color === "w" ? whiteQueen[x][y] : blackQueen[x][y]);
 	} else if (piece.type === "k") {
-		return 1000;
+		return 1000 + (color === "w" ? whiteKing[x][y] : blackKing[x][y]);
 	}
 };
-var getPieceValue = function (piece) {
+
+var getPieceValue = function (piece, x, y) {
 	if (piece === null) {
 		return 0;
 	}
 
-	var pieceValue = calculatePieceValue(piece, piece.color === "w");
+	var pieceValue = calculatePieceValue(piece, piece.color === "w", x, y);
 	return piece.color === "w" ? pieceValue : -pieceValue;
 };
+
+var whitePawn = [
+	[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+	[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
+	[1.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 1.0],
+	[0.5, 0.5, 1.0, 2.5, 2.5, 1.0, 0.5, 0.5],
+	[0.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 0.0],
+	[0.5, -0.5, -1.0, 0.0, 0.0, -1.0, -0.5, 0.5],
+	[0.5, 1.0, 1.0, -2.0, -2.0, 1.0, 1.0, 0.5],
+	[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+];
+var whiteKnight = [
+	[-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
+	[-4.0, -2.0, 0.0, 0.0, 0.0, 0.0, -2.0, -4.0],
+	[-3.0, 0.0, 1.0, 1.5, 1.5, 1.0, 0.0, -3.0],
+	[-3.0, 0.5, 1.5, 2.0, 2.0, 1.5, 0.5, -3.0],
+	[-3.0, 0.0, 1.5, 2.0, 2.0, 1.5, 0.0, -3.0],
+	[-3.0, 0.5, 1.0, 1.5, 1.5, 1.0, 0.5, -3.0],
+	[-4.0, -2.0, 0.0, 0.5, 0.5, 0.0, -2.0, -4.0],
+	[-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
+];
+var whiteBishop = [
+	[-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
+	[-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0],
+	[-1.0, 0.0, 0.5, 1.0, 1.0, 0.5, 0.0, -1.0],
+	[-1.0, 0.5, 0.5, 1.0, 1.0, 0.5, 0.5, -1.0],
+	[-1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0],
+	[-1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0],
+	[-1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, -1.0],
+	[-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
+];
+var whiteRook = [
+	[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+	[0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5],
+	[-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+	[-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+	[-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+	[-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+	[-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+	[0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0],
+];
+var whiteQueen = [
+	[-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
+	[-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0],
+	[-1.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -1.0],
+	[-0.5, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -0.5],
+	[0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -0.5],
+	[-1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.0, -1.0],
+	[-1.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, -1.0],
+	[-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
+];
+var whiteKing = [
+	[-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	[-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	[-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	[-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	[-2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0],
+	[-1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0],
+	[2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0],
+	[2.0, 3.0, 1.0, 0.0, 0.0, 1.0, 3.0, 2.0],
+];
+
+var blackPawn = whitePawn.slice().reverse();
+var blackKnight = whiteKnight.slice().reverse();
+var blackBishop = whiteBishop.slice().reverse();
+var blackRook = whiteRook.slice().reverse();
+var blackQueen = whiteQueen.slice().reverse();
+var blackKing = whiteKing.slice().reverse();
 
 var makeBestMove = function () {
 	var bestMove = getBestMove(game);
@@ -102,13 +186,23 @@ var makeBestMove = function () {
 	board.position(game.fen());
 	showPlayedMovesHistory(game.history());
 	if (game.game_over()) {
-		alert("Game over");
+		game.in_checkmate() ? alert("Check Mate!") : null;
+		game.in_stalemate() ? alert("Stale Mate!") : null;
+		game.in_threefold_repetition() ? alert("Threefold repetition!") : null;
+		game.insufficient_material() ? alert("Insufficient material!") : null;
+		game.in_draw() ? alert("Draw!") : null;
+		return;
 	}
 };
 
 var getBestMove = function (game) {
 	if (game.game_over()) {
-		alert("Game over");
+		game.in_checkmate() ? alert("Check Mate!") : null;
+		game.in_stalemate() ? alert("Stale Mate!") : null;
+		game.in_threefold_repetition() ? alert("Threefold repetition!") : null;
+		game.insufficient_material() ? alert("Insufficient material!") : null;
+		game.in_draw() ? alert("Draw!") : null;
+		return;
 	}
 	depth = 3; //make it so user inputs depth
 
@@ -208,8 +302,8 @@ var getCapturedPiece = function (capturedPiece, color) {
 var onDragStart = function (source, piece, position, orientation) {
 	if (
 		game.in_checkmate() === true ||
-		game.in_draw() === true ||
-		piece.search(/^b/) !== -1
+		game.in_draw() === true
+		// || 	piece.search(/^b/) !== -1
 	) {
 		return false;
 	}
@@ -242,16 +336,12 @@ var onMouseoverSquare = function (square, piece) {
 	});
 
 	if (moves.length === 0) return;
-
-	// console.log(square);
-	// console.log(moves[0].from);
 	highlightSquares(square, moves[0].from);
 
 	for (var i = 0; i < moves.length; i++) {
 		highlightSquares(moves[i].to);
 	}
 };
-
 //executes when mouse stops hovering square
 var onMouseoutSquare = function (square, piece) {
 	removeHighlightedSquares();
@@ -288,7 +378,9 @@ var highlightSquares = function (square, initSquare) {
 	initialSquare.css("background-image", "");
 };
 
+// window.setTimeout(makeBestMove, 300);
 var cfg = {
+	// orientation: "black",
 	draggable: true,
 	position: "start",
 	onDragStart: onDragStart,
