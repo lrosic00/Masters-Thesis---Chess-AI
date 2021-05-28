@@ -35,6 +35,41 @@
 .whiteCaptures {
 	height: 3rem;
 }
+.left-side {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-self: flex-end;
+}
+.left-side span {
+	padding: 1rem;
+	margin: auto;
+}
+
+#undoButton {
+	box-shadow: inset 0px 1px 0px 0px #caefab;
+	background-color: #418d4b;
+	border-radius: 6px;
+	border: 1px solid #268a16;
+	display: inline-block;
+	cursor: pointer;
+	color: white;
+	font-family: Arial;
+	font-size: 15px;
+	font-weight: bold;
+	padding: 6px 24px;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px #070706;
+	align-self: center;
+}
+#undoButton:hover {
+	background-color: #52b15f;
+}
+#undoButton:active {
+	position: relative;
+	top: 1px;
+}
+
 /* 
 .hoverClass {
 	background: rgb(255, 232, 104);

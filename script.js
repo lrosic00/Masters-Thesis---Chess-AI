@@ -1,6 +1,12 @@
 var board,
 	game = new Chess();
 
+jQuery("#chess_board").on(
+	"scroll touchmove touchend touchstart contextmenu",
+	function (e) {
+		e.preventDefault();
+	}
+);
 function undo() {
 	game.undo();
 	board.position(game.fen());
@@ -25,6 +31,7 @@ var minmaxTree = function (depth, game, isMaximisingPlayer) {
 		var possibleMove = possibleMoves[i];
 		game.ugly_move(possibleMove);
 		var value = minimax(depth - 1, game, -99999, 99999, !isMaximisingPlayer);
+
 		game.undo();
 		if (value >= bestMove) {
 			bestMove = value;
@@ -57,7 +64,7 @@ var minimax = function (depth, game, alpha, beta, isMaximisingPlayer) {
 		}
 		return bestMove;
 	} else {
-		var bestMove = 9999;
+		var bestMove = 1000;
 		for (var i = 0; i < possibleMoves.length; i++) {
 			game.ugly_move(possibleMoves[i]);
 			bestMove = Math.min(
@@ -179,32 +186,29 @@ var blackKing = whiteKing.slice().reverse();
 var makeBestMove = function () {
 	var bestMove = getBestMove(game);
 	game.ugly_move(bestMove);
-	// console.log(bestMove.captured);
 	if (bestMove.captured !== undefined) {
 		getCapturedPiece(bestMove.captured, "w");
 	}
 	board.position(game.fen());
 	showPlayedMovesHistory(game.history());
 	if (game.game_over()) {
-		game.in_checkmate() ? alert("Check Mate!") : null;
-		game.in_stalemate() ? alert("Stale Mate!") : null;
-		game.in_threefold_repetition() ? alert("Threefold repetition!") : null;
-		game.insufficient_material() ? alert("Insufficient material!") : null;
-		game.in_draw() ? alert("Draw!") : null;
+		alertEndMessage();
 		return;
 	}
 };
-
+var alertEndMessage = function () {
+	game.in_checkmate() ? alert("Check Mate!") : null;
+	game.in_stalemate() ? alert("Stale Mate!") : null;
+	game.in_threefold_repetition() ? alert("Threefold repetition!") : null;
+	game.insufficient_material() ? alert("Insufficient material!") : null;
+	game.in_draw() ? alert("Draw!") : null;
+};
 var getBestMove = function (game) {
 	if (game.game_over()) {
-		game.in_checkmate() ? alert("Check Mate!") : null;
-		game.in_stalemate() ? alert("Stale Mate!") : null;
-		game.in_threefold_repetition() ? alert("Threefold repetition!") : null;
-		game.insufficient_material() ? alert("Insufficient material!") : null;
-		game.in_draw() ? alert("Draw!") : null;
+		alertEndMessage();
 		return;
 	}
-	depth = 3; //make it so user inputs depth
+	depth = parseInt($("#search-depth").find(":selected").text());
 
 	var bestMove = minmaxTree(depth, game, true);
 	return bestMove;
@@ -314,7 +318,7 @@ var onDrop = function (source, target) {
 	var move = game.move({
 		from: source,
 		to: target,
-		promotion: "q", //always promote to QUEEN for now
+		promotion: $("#promote-to").find(":selected").text().toLowerCase(), //always promote to QUEEN for now
 	});
 
 	removeHighlightedSquares();
