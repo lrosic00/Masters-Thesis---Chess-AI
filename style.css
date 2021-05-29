@@ -1,3 +1,6 @@
+.body {
+	width: max-content;
+}
 .board {
 	width: 80vh;
 	margin: 1%;
@@ -70,6 +73,21 @@
 	top: 1px;
 }
 
+@media (max-width: 600px) {
+	.container {
+		flex-direction: column;
+	}
+	.left-side {
+		flex-direction: row;
+	}
+	.board-b72b1 {
+		margin: auto;
+		padding-left: ;
+	}
+	.capturedPieces {
+		flex-direction: row;
+	}
+}
 /* 
 .hoverClass {
 	background: rgb(255, 232, 104);
