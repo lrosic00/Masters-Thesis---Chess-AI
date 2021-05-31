@@ -9,28 +9,40 @@
 <body>
 <div class="container">
     <div class="left-side">
-<div class="undoButton" style="margin: 0 auto ; padding: 1rem">
-    <button id="undoButton">Undo</button>
-</div>
-<span>
-    Search depth: 
-<select id="search-depth">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3" selected>3 (recommended)</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-</select>
-</span>
-<span>
-    Promote to: 
-    <select id="promote-to">
-    <option value="1" selected>Q</option>
-    <option value="2">R</option>
-    <option value="3" >N</option>
-    <option value="4">B</option>
-</select>
-</span>
+        <span>
+             Positions evaluated: 
+        <span class="positions-counter"></span>
+        </span>
+        
+        <span>
+            Positions evaluated per second: 
+            <span class="positions-persecond"></span>
+        </span>
+        <span class="divider">
+
+        </span>
+         <div class="undoButton" style="margin: 0 auto ; padding: 1rem">
+            <button id="undoButton">Undo</button>
+        </div>
+        <span>
+            Search depth: 
+        <select id="search-depth">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3 (recommended)</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+        </select>
+        </span>
+        <span>
+            Promote to: 
+            <select id="promote-to">
+            <option value="1" selected>Q</option>
+            <option value="2">R</option>
+            <option value="3" >N</option>
+            <option value="4">B</option>
+        </select>
+        </span>
 
 </div>
 <div id="board" class="board"></div>

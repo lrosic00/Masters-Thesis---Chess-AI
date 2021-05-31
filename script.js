@@ -42,6 +42,7 @@ var minmaxTree = function (depth, game, isMaximisingPlayer) {
 };
 
 var minimax = function (depth, game, alpha, beta, isMaximisingPlayer) {
+	positionCounter++;
 	if (depth === 0) {
 		return -getBoardValue(game.board());
 	}
@@ -195,6 +196,7 @@ var makeBestMove = function () {
 		alertEndMessage();
 		return;
 	}
+	console.log(getBoardValue(game.board()));
 };
 var alertEndMessage = function () {
 	game.in_checkmate() ? alert("Check Mate!") : null;
@@ -203,14 +205,23 @@ var alertEndMessage = function () {
 	game.insufficient_material() ? alert("Insufficient material!") : null;
 	game.in_draw() ? alert("Draw!") : null;
 };
+var positionCounter;
 var getBestMove = function (game) {
 	if (game.game_over()) {
 		alertEndMessage();
 		return;
 	}
-	depth = parseInt($("#search-depth").find(":selected").text());
 
+	depth = parseInt($("#search-depth").find(":selected").text());
+	positionCounter = 0;
+
+	var startTime = new Date().getTime();
 	var bestMove = minmaxTree(depth, game, true);
+	var finishTime = new Date().getTime();
+
+	$(".positions-counter").text(positionCounter);
+	positionsPerSec = (positionCounter * 1000) / (finishTime - startTime);
+	$(".positions-persecond").text(positionsPerSec.toFixed(2));
 	return bestMove;
 };
 
