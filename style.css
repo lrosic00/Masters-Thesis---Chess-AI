@@ -84,10 +84,11 @@
 	}
 	.left-side {
 		flex-direction: row;
+		align-self: start;
 	}
 	.board-b72b1 {
-		margin: auto;
-		padding-left: ;
+		/* margin: auto;
+		padding-left:  */
 	}
 	.capturedPieces {
 		flex-direction: row;
